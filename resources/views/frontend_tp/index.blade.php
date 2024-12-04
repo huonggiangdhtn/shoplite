@@ -33,5 +33,4 @@
         
             <!-- end 8pro-righ-banner -->
             @include('frontend_tp.layouts.mod_4_blog')
-
 @endsection

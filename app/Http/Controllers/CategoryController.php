@@ -260,11 +260,11 @@ class CategoryController extends Controller
         $child_cat_ids = Category::where('parent_id',$id)->pluck('id');
         if($category)
         {
-            $kiot_cat = \App\Models\KiotCat::where('categoryId',$category->id)->first();
-            if(  $kiot_cat )
-            {
-                $kiot_cat->delete();
-            }
+            // $kiot_cat = \App\Models\KiotCat::where('categoryId',$category->id)->first();
+            // if(  $kiot_cat )
+            // {
+            //     $kiot_cat->delete();
+            // }
             $status = $category->delete();
 
             if($status){

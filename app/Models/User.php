@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -40,7 +39,7 @@ class User extends Authenticatable
         'taxaddress',
         'status',
     ];
-    
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -58,37 +57,48 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'password' => 'hashed', // Hãy đảm bảo rằng Laravel hỗ trợ thuộc tính này trong phiên bản bạn đang dùng
     ];
 
-    public static function deleteUser($user_id){
+    /**
+     * Delete the user or mark as inactive based on role.
+     *
+     * @param int $user_id
+     * @return int
+     */
+    public static function deleteUser($user_id)
+    {
         $user = User::find($user_id);
-        if(auth()->user()->role =='admin')
-        {
-            $user->delete();
-            return 1;
+
+        // Kiểm tra xem người dùng có tồn tại không
+        if (!$user) {
+            return -1; // Trả về -1 nếu người dùng không tìm thấy
         }
-        else{
+
+        if (auth()->user()->role == 'admin') {
+            $user->delete();
+            return 1; // Trả về 1 nếu người dùng đã được xóa
+        } else {
             $user->status = "inactive";
             $user->save();
-            return 0;
+            return 0; // Trả về 0 nếu người dùng được đánh dấu là không hoạt động
         }
-            
-        
     }
+
+    /**
+     * Create a new user and assign a unique code.
+     *
+     * @param array $data
+     * @return User
+     */
     public static function c_create($data)
     {
-        
         $pro = User::create($data);
-        $pro->code = "CUS" . sprintf('%09d',$pro->id);
-        $pro->save();
-       
         
-       
-        return $pro;
+        // Tạo mã cho người dùng mới
+        $pro->code = "CUS" . sprintf('%09d', $pro->id);
+        $pro->save();
+
+        return $pro; // Trả về đối tượng người dùng mới
     }
-    
-    
-}   
-
-
+}

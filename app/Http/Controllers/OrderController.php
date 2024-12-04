@@ -125,8 +125,8 @@ class OrderController extends Controller
         $products = DB::table('order_details')
         ->select ('order_details.price','order_details.product_id','order_details.quantity', 'p.title','p.photo','p.id','p.type','np.quantity as stock_qty')
         ->where('wo_id',$request->wo_id)
-        ->leftJoin(\DB::raw($query),'order_details.product_id','=','p.id')
-        ->leftJoin(\DB::raw($query1),'order_details.product_id','=','np.product_id')
+        ->leftJoin(DB::raw($query),'order_details.product_id','=','p.id')
+        ->leftJoin(DB::raw($query1),'order_details.product_id','=','np.product_id')
         ->orderBy('id','ASC')->get();
         foreach($products as $product)
         {

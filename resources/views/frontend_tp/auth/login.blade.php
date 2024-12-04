@@ -4,9 +4,9 @@
   $user = auth()->user();
   if($user)
   {
-      $sql  = "select c.quantity, d.* from (SELECT * from shoping_carts where user_id = "
+      $sql  = "select c.quantity, d.* from (SELECT * from shopping_carts where user_id = "
       .$user->id.") as c left join products as d on c.product_id = d.id where d.status = 'active'  ";
-      $pro_carts =   \DB::select($sql ) ;
+      $pro_carts = \DB::select($sql ) ;
   }
   else
   {

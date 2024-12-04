@@ -7,11 +7,12 @@
     "require": {
         "php": "^8.1",
         "anhskohbo/no-captcha": "^3.5",
+        "automattic/woocommerce": "^3.1",
         "barryvdh/elfinder-flysystem-driver": "^0.4.3",
         "barryvdh/laravel-elfinder": "^0.5.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^11.0",
-        "laravel/passport": "^12.0",
+        "laravel/passport": "^12.3",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.2",

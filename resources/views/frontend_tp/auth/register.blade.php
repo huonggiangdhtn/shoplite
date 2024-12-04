@@ -1,4 +1,5 @@
 <?php
+
  
   $setting =\App\Models\SettingDetail::find(1);
   $user = auth()->user();

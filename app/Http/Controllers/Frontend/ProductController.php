@@ -39,7 +39,7 @@ class ProductController extends Controller
             $data['product'] = $product;
             if(!$product)
             {
-                  return view($this->front_view.'.404',$data);
+                return view($this->front_view.'.404',$data);
             }
             $data['page_up_title'] = $product->title;
             $product->hit = $product->hit  + 1;

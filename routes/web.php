@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 /*
@@ -85,7 +86,7 @@ Route::post('front/contact/send', [App\Http\Controllers\Frontend\IndexController
 
 Auth::routes(['register'=>false]);
 
-Route::get('/admin', [App\Http\Controllers\HomeController::class, 'index'])->name('admin');
+Route::get('/admin', [App\Http\Controllers\HomeController::class, 'index'])->name('admin1');
 
 //Admin dashboard
 
@@ -134,7 +135,12 @@ Route::group( ['prefix'=>'admin/','middleware'=>'auth' ],function(){
     Route::post('brand_status',[\App\Http\Controllers\BrandController::class,'brandStatus'])->name('brand.status');
     Route::get('brand_search',[\App\Http\Controllers\BrandController::class,'brandSearch'])->name('brand.search');
    
-    
+    ///Freetranstype section
+    Route::resource('freetranstype', \App\Http\Controllers\FreetransTypeController::class);
+    Route::post('freetranstype_status',[\App\Http\Controllers\FreetransTypeController::class,'freetranstypeStatus'])->name('freetranstype.status');
+    Route::get('freetranstype_search',[\App\Http\Controllers\FreetransTypeController::class,'freetranstypeSearch'])->name('freetranstype.search');
+    Route::get('freetrans_sort',[\App\Http\Controllers\FreeTransactionController::class,'freetransSort'])->name('freetransaction.sort');
+   
 
     ///Product section
     Route::resource('product', \App\Http\Controllers\ProductController::class);
@@ -144,6 +150,9 @@ Route::group( ['prefix'=>'admin/','middleware'=>'auth' ],function(){
     Route::get('product_jsearch',[\App\Http\Controllers\ProductController::class,'productJsearch'])->name('product.jsearch');
     Route::get('product_stock_quantity',[\App\Http\Controllers\ProductController::class,'productStock_quantity'])->name('product.stock_quantity');
     Route::get('product_jsearchwi',[\App\Http\Controllers\ProductController::class,'productJsearchwi'])->name('product.jsearchwi');
+    Route::get('product_jsearchco',[\App\Http\Controllers\ProductController::class,'productJsearchco'])->name('product.jsearchco');
+   
+    
     Route::get('product_groupprice',[\App\Http\Controllers\ProductController::class,'productGPriceSearch'])->name('product.groupprice');
     Route::get('product_jsearchwo',[\App\Http\Controllers\ProductController::class,'productJsearchwo'])->name('product.jsearchwo');
     Route::post('product_add',[\App\Http\Controllers\ProductController::class,'productAdd'])->name('product.add');
@@ -158,7 +167,15 @@ Route::group( ['prefix'=>'admin/','middleware'=>'auth' ],function(){
     Route::get('product_price/{id}',[\App\Http\Controllers\ProductController::class,'productPriceView'])->name('product.priceview');
     Route::post('product_price',[\App\Http\Controllers\ProductController::class,'productPriceUpdate'])->name('product.priceupdate');
     Route::get('product_print',[\App\Http\Controllers\ProductController::class,'productPrint'])->name('product.print');
-   
+    Route::post('product_itcctv_jsearch',[\App\Http\Controllers\ProductController::class,'itcctv_jsearch'])->name('product.itcctv_jsearch');
+    Route::get('product_itcctv_jsearch',[\App\Http\Controllers\ProductController::class,'itcctv_jsearch'])->name('product.itcctv_jsearch_get');
+    Route::get('product_itcctv_detail',[\App\Http\Controllers\ProductController::class,'itcctv_productdetail'])->name('product.itcctv_productdetail');
+    Route::get('product_productjmodsearch',[\App\Http\Controllers\ProductController::class,'productJmodsearch'])->name('product.productjmodsearch');
+    
+
+    
+    Route::get('database_backup',[\App\Http\Controllers\BackupController::class,'backup'])->name('data.backup');
+  
    
     
     //User section
@@ -175,14 +192,144 @@ Route::group( ['prefix'=>'admin/','middleware'=>'auth' ],function(){
     Route::post('ugroup_status',[\App\Http\Controllers\UGroupController::class,'ugroupStatus'])->name('ugroup.status');
     Route::get('ugroup_search',[\App\Http\Controllers\UGroupController::class,'ugroupSearch'])->name('ugroup.search');
 
-   
+    ///Warehouse section
+    Route::resource('warehouse', \App\Http\Controllers\WarehouseController::class);
+    Route::post('warehouse_status',[\App\Http\Controllers\WarehouseController::class,'warehouseStatus'])->name('warehouse.status');
+    Route::get('warehouse_search',[\App\Http\Controllers\WarehouseController::class,'warehouseSearch'])->name('warehouse.search');
+
     ///Log section
     Route::resource('log', \App\Http\Controllers\LogController::class);
 
-      
+    ///BeginInventory section
+    Route::resource('binventory', \App\Http\Controllers\BInventoryController::class);
+    Route::get('binventory_search',[\App\Http\Controllers\BInventoryController::class,'binventorySearch'])->name('binventory.search');
+    Route::get('binventory_sort',[\App\Http\Controllers\BInventoryController::class,'binventorySort'])->name('binventory.sort');
+
+
+    /// Inventory section
+    Route::resource('inventory', \App\Http\Controllers\InventoryController::class);
+    Route::get('inventory_search',[\App\Http\Controllers\InventoryController::class,'inventorySearch'])->name('inventory.search');
+    Route::get('inventory_sort',[\App\Http\Controllers\InventoryController::class,'inventorySort'])->name('inventory.sort');
+    Route::get('inventory_print',[\App\Http\Controllers\InventoryController::class,'inventoryPrint'])->name('inventory.print');
+    Route::get('inventory_view/{id}',[\App\Http\Controllers\InventoryController::class,'inventoryView'])->name('inventory.view');
+    Route::get('inventory_viewproduct/{id}',[\App\Http\Controllers\InventoryController::class,'inventoryViewProduct'])->name('inventory.viewproduct');
+
+    /// Bankaccount section
+    Route::resource('bankaccount', \App\Http\Controllers\BankController::class);
+    Route::post('bankaccount_status',[\App\Http\Controllers\BankController::class,'bankaccountStatus'])->name('bankaccount.status');
+    Route::get('banktrans_view',[\App\Http\Controllers\BankController::class,'banktransView'])->name('bankaccount.viewtrans');
+    Route::get('banktrans_sort',[\App\Http\Controllers\BankController::class,'banktransSort'])->name('banktransaction.sort');
+    Route::get('bankaccount_transfer/{id}',[\App\Http\Controllers\BankController::class,'bankaccountTransfer'])->name('bankaccount.transfer');
+    Route::post('bankaccount_transfer_save',[\App\Http\Controllers\BankController::class,'bankaccountTransferSave'])->name('bankaccount.savetransfer');
+    Route::get('banktrans_show/{id}',[\App\Http\Controllers\BankController::class,'banktransShow'])->name('banktrans.show');
+
+    /// warehousein section
+    Route::resource('warehousein', \App\Http\Controllers\WarehouseinController::class);
+    Route::get('warehousein_search',[\App\Http\Controllers\WarehouseinController::class,'warehouseinSearch'])->name('warehousein.search');
+    Route::get('warehousein_getProductList',[\App\Http\Controllers\WarehouseinController::class,'getProductList'])->name('warehousein.getProductList');
+    Route::get('warehousein_paid/{id}',[\App\Http\Controllers\WarehouseinController::class,'warehouseinPaid'])->name('warehousein.paid');
+    Route::post('warehousein_storepaid',[\App\Http\Controllers\WarehouseinController::class,'warehouseinSavePaid'])->name('warehousein.storepaid');
+    Route::post('warehousein_return',[\App\Http\Controllers\WarehouseinController::class,'warehouseinReturn'])->name('warehousein.return');
+    Route::get('warehousein_showold/{id}',[\App\Http\Controllers\WarehouseinController::class,'showold'])->name('warehousein.showold');
+    
+    Route::post('warehousein_add_einvoice',[\App\Http\Controllers\WarehouseinController::class,'add_einvoice'])->name('warehousein.add_einvoice');
+   
+    /// Supplier section
+    Route::resource('supplier', \App\Http\Controllers\SupplierController::class);
+    Route::get('supplier_search',[\App\Http\Controllers\SupplierController::class,'supplierSearch'])->name('supplier.search');
+    Route::get('supplier_jsearch',[\App\Http\Controllers\SupplierController::class,'supplierJsearch'])->name('supplier.jsearch');
+    Route::get('supplier_paid/{id}',[\App\Http\Controllers\SupplierController::class,'supplierPaid'])->name('supplier.paid');
+    Route::post('supplier_storepaid',[\App\Http\Controllers\SupplierController::class,'supplierSavePaid'])->name('supplier.storepaid');
+    Route::get('supplier_balance/{id}',[\App\Http\Controllers\SupplierController::class,'supplierMakeBalance'])->name('supplier.balance');
+    Route::post('supplier_storereceived',[\App\Http\Controllers\SupplierController::class,'supplierSaveReceived'])->name('supplier.storereceived');
+    Route::get('supplier_received/{id}',[\App\Http\Controllers\SupplierController::class,'supplierReceived'])->name('supplier.received');
+    Route::get('moneyin/{id}',[\App\Http\Controllers\UserController::class,'moneyUserToStore'])->name('user.usertostore');
+    Route::get('showsup/{id}',[\App\Http\Controllers\UserController::class,'moneyUsershow'])->name('user.showsup');
+    Route::post('user_store_save',[\App\Http\Controllers\UserController::class,'moneySaveUserToStore'])->name('user.saveusertostore');
+    Route::get('moneyout/{id}',[\App\Http\Controllers\UserController::class,'moneyStoreToUser'])->name('user.storetouser');
+    Route::post('store_user_save',[\App\Http\Controllers\UserController::class,'moneySaveStoreToUser'])->name('user.savestoretouser');
+  
+    Route::get('supplier_sort',[\App\Http\Controllers\SupplierController::class,'supplierSort'])->name('supplier.sort');
+    Route::post('supplier_status',[\App\Http\Controllers\SupplierController::class,'supplierStatus'])->name('supplier.status');
+    Route::post('supplier_add',[\App\Http\Controllers\SupplierController::class,'supplierAdd'])->name('supplier.add');
+    Route::get('supplier_productdetails/{id}',[\App\Http\Controllers\SupplierController::class,'BoughtProducts'])->name('supplier.productdetails');
+    /// FreeTransaction section
+    Route::resource('freetransaction', \App\Http\Controllers\FreeTransactionController::class);
+
+    /// SupTransaction section
+    Route::resource('suptransaction', \App\Http\Controllers\SupTransactionController::class);
+    Route::get('suptrans_list',[\App\Http\Controllers\SupTransactionController::class,'suptransList'])->name('suptrans.list');
+    Route::get('suptrans_sort',[\App\Http\Controllers\SupTransactionController::class,'suptransSort'])->name('suptrans.sort');
+ 
+    /// Delivery section
+    Route::resource('delivery', \App\Http\Controllers\DeliveryController::class);
+    Route::get('delivery_search',[\App\Http\Controllers\DeliveryController::class,'deliverySearch'])->name('delivery.search');
+    Route::get('delivery_jsearch',[\App\Http\Controllers\DeliveryController::class,'deliveryJsearch'])->name('delivery.jsearch');
+    Route::get('delivery_sort',[\App\Http\Controllers\DeliveryController::class,'deliverySort'])->name('delivery.sort');
+    Route::post('delivery_status',[\App\Http\Controllers\DeliveryController::class,'deliveryStatus'])->name('delivery.status');
+
+    /// warehouseout section
+    Route::resource('warehouseout', \App\Http\Controllers\WarehouseoutController::class);
+    Route::get('warehouseout_search',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutSearch'])->name('warehouseout.search');
+    Route::get('warehouseout_paid/{id}',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutPaid'])->name('warehouseout.paid');
+    Route::post('warehouseout_storepaid',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutSavePaid'])->name('warehouseout.storepaid');
+    Route::get('warehouseout_getProductList',[\App\Http\Controllers\WarehouseoutController::class,'getProductList'])->name('warehouseout.getProductList');
+    Route::get('warehouseout_deprint/{id}',[\App\Http\Controllers\WarehouseoutController::class,'deliveryPrint'])->name('warehouseout.deprint');
+    Route::post('warehouseout_return',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutReturn'])->name('warehouseout.return');
+    Route::get('warehouseout_returnall',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutReturnall'])->name('warehouseout.returnall');
+    Route::get('warehouseout_returndetail',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutReturndetail'])->name('warehouseout.returndetail');
+    Route::post('warehouseout_savereturndetail',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutSaveReturndetail'])->name('warehouseout.savereturndetail');
+    Route::post('warehouseout_updatereturndetail',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutUpdatereturndetail'])->name('warehouseout.updatereturndetail');
+    Route::get('warehouseout_getProductListReturn',[\App\Http\Controllers\WarehouseoutController::class,'getProductListReturn'])->name('warehouseout.getProductListReturn');
+    Route::post('warehouseout_warehouseoutDestroyReturndetail',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutDestroyReturndetail'])->name('warehouseout.warehouseoutDestroyReturndetail');
+  
+    
+    
+    Route::post('warehouseout_savereturnall',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutSaveReturnall'])->name('warehouseout.savereturnall');
+    Route::post('warehouseout_returnnew',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutReturnNew'])->name('warehouseout.returnnew');
+    Route::get('warehouseout_getOldProductList',[\App\Http\Controllers\WarehouseoutController::class,'getOldProductList'])->name('warehouseout.getOldProductList');
+    Route::get('warehouseout_today',[\App\Http\Controllers\WarehouseoutController::class,'today'])->name('warehouseout.today');
+    Route::post('warehouseout_publishitcctv',[\App\Http\Controllers\WarehouseoutController::class,'publishItcctv'])->name('warehouseout.publishitcctv');
+   // ComboCreation section
+   Route::resource('combo', \App\Http\Controllers\ComboController::class);
+   Route::resource('combocreation', \App\Http\Controllers\ComboCreationController::class);
+   Route::get('combo_search',[\App\Http\Controllers\ComboController::class,'comboSearch'])->name('combo.search');
+   Route::post('combo_status',[\App\Http\Controllers\ComboController::class,'comboStatus'])->name('combo.status');
+   Route::get('combo_getproductlist',[\App\Http\Controllers\ComboController::class,'getProductList'])->name('combo.getProductList');
+
+   Route::get('combocreation_getproductlist',[\App\Http\Controllers\ComboCreationController::class,'getProductList'])->name('combocreation.getProductList');
+   
+   /////////////////////
+    Route::get('warehouseout_showold/{id}',[\App\Http\Controllers\WarehouseoutController::class,'showold'])->name('warehouseout.showold');
+    
+    Route::get('warehouseout_new/{id}',[\App\Http\Controllers\WarehouseoutController::class,'warehouseoutNew'])->name('warehouseout.new');
+    
+    /// Customer section
+    Route::resource('customer', \App\Http\Controllers\CustomerController::class);
+    Route::get('customer_search',[\App\Http\Controllers\CustomerController::class,'customerSearch'])->name('customer.search');
+    Route::get('customer_jsearch',[\App\Http\Controllers\CustomerController::class,'customerJsearch'])->name('customer.jsearch');
+    Route::get('customer_paid/{id}',[\App\Http\Controllers\CustomerController::class,'customerPaid'])->name('customer.paid');
+    Route::post('customer_storepaid',[\App\Http\Controllers\CustomerController::class,'customerSavePaid'])->name('customer.storepaid');
+    Route::get('customer_balance/{id}',[\App\Http\Controllers\CustomerController::class,'customerMakeBalance'])->name('customer.balance');
+    Route::post('customer_add',[\App\Http\Controllers\CustomerController::class,'customerAdd'])->name('customer.add');
+    Route::get('customer_productdetails/{id}',[\App\Http\Controllers\CustomerController::class,'BoughtProducts'])->name('customer.productdetails');
+    
+    
+    Route::get('customer_sort',[\App\Http\Controllers\CustomerController::class,'customerSort'])->name('customer.sort');
+    Route::post('customer_status',[\App\Http\Controllers\CustomerController::class,'customerStatus'])->name('customer.status');
+    Route::post('customer_storereceived',[\App\Http\Controllers\CustomerController::class,'customerSaveReceived'])->name('customer.storereceived');
+    Route::get('customer_received/{id}',[\App\Http\Controllers\CustomerController::class,'customerReceived'])->name('customer.received');
+
     /// Setting  section
     Route::resource('setting', \App\Http\Controllers\SettingController::class);
-       
+    Route::get('setting_updatedata',[\App\Http\Controllers\SettingController::class,'viewUpdateData'])->name('setting.update_data');
+    Route::post('setting_updateinvpro',[\App\Http\Controllers\SettingController::class,'updateInvPro'])->name('setting.updateinvpro');
+    Route::post('setting_updatesitemap',[\App\Http\Controllers\SettingController::class,'updateSitemap'])->name('setting.updatesitemap');
+    Route::post('setting_kiemtracongno',[\App\Http\Controllers\SettingController::class,'kiemtracongno'])->name('setting.kiemtracongno');
+    Route::post('setting_cnsp_brand',[\App\Http\Controllers\SettingController::class,'nhap_san_pham_brand'])->name('setting.cnsp_brand');
+    Route::post('setting_getbrand',[\App\Http\Controllers\SettingController::class,'view_brand'])->name('setting.getbrand');
+    Route::post('setting_testapi',[\App\Http\Controllers\SettingController::class,'testApi'])->name('setting.testapi');
+   
     
     
     /// order section
@@ -191,14 +338,130 @@ Route::group( ['prefix'=>'admin/','middleware'=>'auth' ],function(){
     Route::get('order_getProductList',[\App\Http\Controllers\OrderController::class,'getProductList'])->name('order.getProductList');
     Route::get('order_out/{id}',[\App\Http\Controllers\OrderController::class,'orderOut'])->name('order.out');
     Route::post('order_outupdate',[\App\Http\Controllers\OrderController::class,'orderOutUpdate'])->name('order.outupdate');
+
+     /// warehousetransfer section
+    Route::resource('warehousetransfer', \App\Http\Controllers\WarehousetransferController::class);
+    Route::get('warehousetrans_getProductList',[\App\Http\Controllers\WarehousetransferController::class,'getProductList'])->name('warehousetrans.getProductList');
+    Route::get('warehousetrans_deprint/{id}',[\App\Http\Controllers\WarehousetransferController::class,'deliveryPrint'])->name('warehousetransfer.deprint');
   
+     /// warehousetomaintain section
+     Route::resource('warehousetomaintain', \App\Http\Controllers\WarehousetomaintainController::class);
+    ///maitain
+    Route::get('maintain_inv',[\App\Http\Controllers\InventoryMaintenanceController::class,'index'])->name('inventorymaintenance.index');
+    Route::get('inventorym_view/{id}',[\App\Http\Controllers\InventoryMaintenanceController::class,'inventorymView'])->name('inventorymaintain.view');
+
+    Route::get('maintain_search',[\App\Http\Controllers\InventoryMaintenanceController::class,'inventorySearch'])->name('inventorymaintenance.search');
+    Route::get('maintain_sort',[\App\Http\Controllers\InventoryMaintenanceController::class,'inventorySort'])->name('inventorymaintenance.sort');
+    Route::get('maintain_toshop',[\App\Http\Controllers\InventoryMaintenanceController::class,'inventoryToShop'])->name('inventorymaintenance.toshop');
+    Route::get('maintain_toconsume',[\App\Http\Controllers\InventoryMaintenanceController::class,'inventoryToConsume'])->name('inventorymaintenance.toconsume');
+    Route::get('maintain_todestroy',[\App\Http\Controllers\InventoryMaintenanceController::class,'inventoryToDestroy'])->name('inventorymaintenance.todestroy');
+    Route::post('maintain_savetoshop',[\App\Http\Controllers\InventoryMaintenanceController::class,'inventorySaveToShop'])->name('inventorymaintenance.savetodestroy');
+
+   
+   
+    ///maintainin
+    Route::resource('maintainin', \App\Http\Controllers\MaintainInController::class);
+    Route::post('maintainin_savereturn',[\App\Http\Controllers\MaintainInController::class,'maintaininSaveReturn'])->name('maintainin.savereturn');
+    Route::post('maintainin_storepaid',[\App\Http\Controllers\MaintainInController::class,'maintaininSavePaid'])->name('maintainin.storepaid');
+    Route::get('maintainin_paid/{id}',[\App\Http\Controllers\MaintainInController::class,'maintaininPaid'])->name('maintainin.paid');
+    Route::get('maintainin_getitem',[\App\Http\Controllers\MaintainInController::class,'getItem'])->name('maintainin.getitem');
+    Route::get('maintainin_viewfinish/{id}',[\App\Http\Controllers\MaintainInController::class,'maintaininViewFinish'])->name('maintainin.viewfinish');
+   
+    Route::post('maintainin_savefinish',[\App\Http\Controllers\MaintainInController::class,'maintaininSaveFinish'])->name('maintainin.savefinish');
+    Route::get('maintainin_editpaid/{id}',[\App\Http\Controllers\MaintainInController::class,'edit_paid_amount'])->name('maintainin.edit_paid');
+    Route::post('maintainin.update_paid',[\App\Http\Controllers\MaintainInController::class,'maintaininUpdatepaid'])->name('maintainin.updatepaid');
+    
+    ///maintainsent
+    Route::resource('maintainsent', \App\Http\Controllers\MaintainSentController::class);
+    Route::get('maintainsent_getProductList',[\App\Http\Controllers\MaintainSentController::class,'getProductList'])->name('maintainsent.getProductList');
+    Route::get('maintainsent_deprint/{id}',[\App\Http\Controllers\MaintainSentController::class,'deliveryPrint'])->name('maintainsent.deprint');
   
+     ///maintainsent
+     Route::resource('maintainback', \App\Http\Controllers\MaintainBackController::class);
+     Route::get('maintainback_getProductList',[\App\Http\Controllers\MaintainBackController::class,'getProductList'])->name('maintainback.getProductList');
+     Route::get('maintainback_deprint/{id}',[\App\Http\Controllers\MaintainBackController::class,'deliveryPrint'])->name('maintainback.deprint');
+     Route::get('maintainback_paid/{id}',[\App\Http\Controllers\MaintainBackController::class,'maintainbackPaid'])->name('maintainback.paid');
+     Route::post('maintainback_storepaid',[\App\Http\Controllers\MaintainBackController::class,'maintainbackSavePaid'])->name('maintainback.storepaid');
+    //bbanktran
+    Route::resource('bbanktrans', \App\Http\Controllers\BBanktransController::class);
+    ///maintaintowarehouse
+    Route::resource('maintaintowarehouse', \App\Http\Controllers\MaintaintoWarehouseController::class);
+    ///maintaintodestroy
+    Route::resource('maintaintodestroy', \App\Http\Controllers\MaintaintoDestroyController::class);
+    ///inventorydestroy
+    Route::resource('inventorydestroy', \App\Http\Controllers\InventoryDestroyController::class);
+    Route::get('inventorydestroy_search',[\App\Http\Controllers\InventoryDestroyController::class,'inventorySearch'])->name('inventorydestroy.search');
+    Route::get('inventorydestroy_sort',[\App\Http\Controllers\InventoryDestroyController::class,'inventorySort'])->name('inventorydestroy.sort');
+    Route::get('inventoryd_view/{id}',[\App\Http\Controllers\InventoryDestroyController::class,'inventorydView'])->name('inventorydestroy.view');
+
+    ///maintaintodestroy
+    Route::resource('maintaintoproperty', \App\Http\Controllers\MaintaintoPropertyController::class);
+    ///inventorydproperty
+    Route::resource('inventoryproperty', \App\Http\Controllers\InventoryPropertyController::class);
+    Route::get('inventoryproperty_search',[\App\Http\Controllers\InventoryPropertyController::class,'inventorySearch'])->name('inventoryproperty.search');
+    Route::get('inventoryproperty_sort',[\App\Http\Controllers\InventoryPropertyController::class,'inventorySort'])->name('inventoryproperty.sort');
+    Route::get('inventoryp_view/{id}',[\App\Http\Controllers\InventoryPropertyController::class,'inventorypView'])->name('inventoryproperty.view');
+
+     ///warehousetoproperty
+     Route::resource('warehousetoproperty', \App\Http\Controllers\WarehousetoPropertyController::class);
+    ///warehousetodestroy
+    Route::resource('warehousetodestroy', \App\Http\Controllers\WarehousetoDestroyController::class);
+    ///propertytowarehouse
+    Route::resource('propertytowarehouse', \App\Http\Controllers\PropertytoWarehouseController::class);
+    ///propertytodestroy
+    Route::resource('propertytodestroy', \App\Http\Controllers\PropertytoDestroyController::class);
+   ///propertytomaintain
+   Route::resource('propertytomaintain', \App\Http\Controllers\PropertytoMaintainController::class);
+   ///inventorycheck
+   Route::resource('inventorycheck', \App\Http\Controllers\InventoryCheckController::class);
+  
+   ///inventorycheck
+   Route::resource('modpro', \App\Http\Controllers\FrontModProController::class);
+   Route::post('modpro_status',[\App\Http\Controllers\FrontModProController::class,'modproStatus'])->name('modpro.status');
+   Route::get('modpro_addpro/{id}',[\App\Http\Controllers\FrontModProController::class,'modproAddpro'])->name('modpro.addpro');
+   Route::post('modpro_savepro',[\App\Http\Controllers\FrontModProController::class,'modproSavepro'])->name('modpro.savepro');
+   Route::post('modpro_removepro',[\App\Http\Controllers\FrontModProController::class,'modproRemovepro'])->name('modpro.removepro');
+   Route::get('cproduct_price/{id}/{mod_id}',[\App\Http\Controllers\FrontModProController::class,'productPriceView'])->name('cproduct.priceview');
+   Route::post('cproduct_price',[\App\Http\Controllers\FrontModProController::class,'productPriceUpdate'])->name('cproduct.priceupdate');
+   Route::get('modpro_up/{id}/{mod_id}',[\App\Http\Controllers\FrontModProController::class,'up'])->name('modpro.up');
+   Route::get('modpro_down/{id}/{mod_id}',[\App\Http\Controllers\FrontModProController::class,'down'])->name('modpro.down');
+   Route::get('inventorycheck_getProductList',[\App\Http\Controllers\InventoryCheckController::class,'getProductList'])->name('inventorycheck.getProductList');
+   Route::get('admin_getoutmonth', [\App\Http\Controllers\AdminController::class,'out_month_view'])->name('admin.getoutmonth');
+   Route::get('admin_getoutday', [\App\Http\Controllers\AdminController::class,'out_day_view'])->name('admin.getoutday');
+   Route::get('admin_getinmonth', [\App\Http\Controllers\AdminController::class,'in_month_view'])->name('admin.getinmonth');
+   Route::get('admin_getinday', [\App\Http\Controllers\AdminController::class,'in_day_view'])->name('admin.getinday');
+   Route::get('admin_getoutyear', [\App\Http\Controllers\AdminController::class,'out_year_view'])->name('admin.getoutyear');
+   Route::get('admin_getinyear', [\App\Http\Controllers\AdminController::class,'in_year_view'])->name('admin.getinyear');
+   Route::get('admin_getoutall', [\App\Http\Controllers\AdminController::class,'out_all_view'])->name('admin.getoutall');
+   Route::get('admin_getinall', [\App\Http\Controllers\AdminController::class,'in_all_view'])->name('admin.getinall');
+  ////report
   
   Route::resource('comment',\App\Http\Controllers\CommentController::class);
   Route::post('comment_status',[\App\Http\Controllers\CommentController::class,'commentStatus'])->name('comment.status');
   Route::get('comment_search',[\App\Http\Controllers\CommentController::class,'commentSearch'])->name('comment.search');
   
-       /////file upload/////////
+    Route::get('report_chitietcongno/{id}', [\App\Http\Controllers\ReportController::class,'reportCongnoChitiet'])->name('report.chitietcongno');
+    
+    Route::get('report_money', [\App\Http\Controllers\ReportController::class,'reportBenefit'])->name('report.money');
+    Route::get('report_thuchi', [\App\Http\Controllers\ReportController::class,'reportThuchi'])->name('report.thuchi');
+    Route::get('report_congnokhach', [\App\Http\Controllers\ReportController::class,'reportCongnokhach'])->name('report.congnokhach');
+    Route::get('report_congnosup', [\App\Http\Controllers\ReportController::class,'reportCongnosup'])->name('report.congnosup');
+    Route::get('report_sanpham', [\App\Http\Controllers\ReportController::class,'reportSanpham'])->name('report.sanpham');
+    Route::get('report_quy', [\App\Http\Controllers\ReportController::class,'reportQuy'])->name('report.quy');
+  ///////kiotreportCongnosup
+    Route::get('kiot_index', [\App\Http\Controllers\SettingController::class,'KiotIndex'])->name('kiot.index');
+    Route::post('kiot_categoryupdate', [\App\Http\Controllers\SettingController::class,'KiotCategoryUpdate'])->name('kiot.categoryupdate');
+    Route::post('kiot_productupdate', [\App\Http\Controllers\SettingController::class,'KiotProductUpdate'])->name('kiot.productupdate');
+    Route::post('kiot_customerupdate', [\App\Http\Controllers\SettingController::class,'KiotCustomerUpdate'])->name('kiot.customerupdate');
+    Route::post('kiot_brancheupdate', [\App\Http\Controllers\SettingController::class,'KiotBranchUpdate'])->name('kiot.brancheupdate');
+    Route::post('kiot_userupdate', [\App\Http\Controllers\SettingController::class,'KiotuserUpdate'])->name('kiot.userupdate');
+    Route::post('kiot_bankaccountupdate', [\App\Http\Controllers\SettingController::class,'KiotBankUpdate'])->name('kiot.bankaccountupdate');
+    Route::post('kiot_customergroupupdate', [\App\Http\Controllers\SettingController::class,'KiotCustomerGroupUpdate'])->name('kiot.customergroupupdate');
+    Route::post('kiot_warehouseinupdate', [\App\Http\Controllers\SettingController::class,'KiotWarehouseinupdateUpdate'])->name('kiot.warehouseinupdate');
+    Route::post('kiot_flowupdate', [\App\Http\Controllers\SettingController::class,'KiotFlowUpdate'])->name('kiot.flowupdate');
+    Route::post('kiot_warehouseoutupdate', [\App\Http\Controllers\SettingController::class,'KiotWarehouseoutupdateUpdate'])->name('kiot.warehouseoutupdate');
+    Route::post('kiot_updatebenefit', [\App\Http\Controllers\SettingController::class,'updateBenefit'])->name('kiot.updatebenefit');
+   /////file upload/////////
  
     Route::post('avatar-upload', [\App\Http\Controllers\FilesController::class, 'avartarUpload' ])->name('upload.avatar');
     
@@ -209,7 +472,11 @@ Route::group( ['prefix'=>'admin/','middleware'=>'auth' ],function(){
 });
 
 });
-
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']],
+ function () { \UniSharp\LaravelFilemanager\Lfm::routes();});
+///them cho glide
+ Route::get('glide/{path}', function($path){
+})->where('path', '.+');
 ////end//////////////
 
 Route::get('unauthorized',[\App\Http\Controllers\Controller::class,'unauthorized'])->name('unauthorized');

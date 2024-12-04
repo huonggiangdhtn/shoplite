@@ -20,14 +20,14 @@ class WarehouseSeeder extends Seeder
                 'title'=>"không xác định",
                 'slug'=>'khong_xac_dinh',
                 'status'=>'active',
-                'is_parent'=>0
+                'is_parent'=>0,
 
             ],
         ]);
         DB::table('setting_details')->insert([
             [   
                 'company_name'=>"Tên công ty",
-                'web_title'=>"Tên công ty",
+                'web_title'=>"Digorry",
                 'phone'=>'0500363732',
                 'address'=>'Ywang Buôn Ma Thuột, Đăk Lăk',
             ],
@@ -35,7 +35,7 @@ class WarehouseSeeder extends Seeder
        
         DB::table('themesettings')->insert([
             [   
-                'title'=>"frontend",
+                'title'=>"frontend_tp",
             ],
         ]);
         DB::table('roles')->insert([
